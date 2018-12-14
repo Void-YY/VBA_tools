@@ -1,5 +1,6 @@
 
 Function ListFiles(DirPath, PathType)
+    On Error Resume Next
     Dim MyName, Dic, Did, i, F, MyFileName, SheetName, SheetSize, Cell 
     Set objFolder = Nothing
     Set objShell = Nothing
@@ -11,6 +12,9 @@ Function ListFiles(DirPath, PathType)
     Do While i < Dic.Count
         Ke = Dic.keys   '开始遍历字典
         MyName = Dir(Ke(i), vbDirectory)    '查找目录
+        If Err.Number <> 0 Then
+        End If
+        On Error GoTo 0
         Do While MyName <> ""
             If MyName <> "." And MyName <> ".." Then
                 If (GetAttr(Ke(i) & MyName) And vbDirectory) = vbDirectory Then    '如果是次级目录
@@ -98,6 +102,7 @@ Function MergeCells(SheetName,CellNumber)
 End Function
 
 Private Sub CommandButton1_Click()
+    On Error Resume Next
     Dim MyName, Dirs, RootNum, Sheets, t, TT
     t = Time
     Set objShell = CreateObject("Shell.Application")
@@ -110,6 +115,9 @@ Private Sub CommandButton1_Click()
         Ke = Dirs.keys   '开始遍历字典
 
         MyName = Dir(Ke(i), vbDirectory)    '查找目录
+        If Err.Number <> 0 Then
+        End If
+        On Error GoTo 0
         Do While MyName <> ""
             If MyName <> "." And MyName <> ".." Then
                 If (GetAttr(Ke(i) & MyName) And vbDirectory) = vbDirectory Then    '如果是次级目录

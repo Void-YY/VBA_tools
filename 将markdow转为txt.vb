@@ -1,4 +1,5 @@
 Sub CommandButton1_Click()
+    On Error Resume Next
     Dim MyName, Dic, Did, i, F, MyFileName, SheetSize, Cell
     Set objShell = CreateObject("Shell.Application")
     Set objFolder = objShell.BrowseForFolder(0, "chose", 0, 0)
@@ -10,14 +11,17 @@ Sub CommandButton1_Click()
     Do While i < Dic.Count
         Ke = Dic.keys   '?????鯊晙???
 
-        MyName = Dir(Ke(i), vbDirectory)    '?鰈?????
+        MyName = Dir(Ke(i), vbDirectory)
+        If Err.Number <> 0 Then
+        End If
+        On Error GoTo 0
         Do While MyName <> ""
             If MyName <> "." And MyName <> ".." Then
-                If (GetAttr(Ke(i) & MyName) And vbDirectory) = vbDirectory Then    '?郢鈹?????????
-                    Dic.Add (Ke(i) & MyName & "\"), ""  '?????葷??晴??篋????????錥?????
+                If (GetAttr(Ke(i) & MyName) And vbDirectory) = vbDirectory Then
+                    Dic.Add (Ke(i) & MyName & "\"), ""
                 End If
             End If
-            MyName = Dir    '???鯊昉???
+            MyName = Dir
         Loop
         i = i + 1
     Loop
@@ -29,7 +33,7 @@ Sub CommandButton1_Click()
             MyFileName = Dir
         Loop
     Next
-    MsgBox (Did.Count)
+    MsgBox ("converted files : " & Did.Count)
 End Sub
 
 Function ChangeFile(fileToRead)
@@ -68,6 +72,7 @@ Err_Handle:
     Set writeFile = Nothing
     Set FSO = Nothing
 End Function
+
 
 
 
