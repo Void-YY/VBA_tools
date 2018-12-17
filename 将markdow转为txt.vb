@@ -4,7 +4,11 @@ Sub CommandButton1_Click()
     Set objShell = CreateObject("Shell.Application")
     Set objFolder = objShell.BrowseForFolder(0, "chose", 0, 0)
     Set Dic = CreateObject("Scripting.Dictionary")
-    If Not objFolder Is Nothing Then lj = objFolder.self.Path & "\"
+    If Not objFolder Is Nothing Then
+        lj = objFolder.self.Path & "\"
+    Else
+        Exit Sub
+    End If
     Dic.Add (lj), ""
     Set Did = CreateObject("Scripting.Dictionary")
     i = 0

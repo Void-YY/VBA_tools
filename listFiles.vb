@@ -1,7 +1,6 @@
 
 Function ListFiles(DirPath, PathType)
-    On Error Resume Next
-    Dim MyName, Dic, Did, i, F, MyFileName, SheetName, SheetSize, Cell 
+    Dim MyName, Dic, Did, i, F, MyFileName, SheetName, SheetSize, Cell
     Set objFolder = Nothing
     Set objShell = Nothing
     Set Dic = CreateObject("Scripting.Dictionary")    '创建一个字典对象
@@ -11,10 +10,8 @@ Function ListFiles(DirPath, PathType)
     If PathType <> "Root" Then
     Do While i < Dic.Count
         Ke = Dic.keys   '开始遍历字典
+
         MyName = Dir(Ke(i), vbDirectory)    '查找目录
-        If Err.Number <> 0 Then
-        End If
-        On Error GoTo 0
         Do While MyName <> ""
             If MyName <> "." And MyName <> ".." Then
                 If (GetAttr(Ke(i) & MyName) And vbDirectory) = vbDirectory Then    '如果是次级目录
@@ -50,16 +47,16 @@ Function ListFiles(DirPath, PathType)
     End If
     Sheets(SheetName).[A1].Resize(Did.Count, 1) = WorksheetFunction.Transpose(Did.keys)
     Sheets(SheetName).[B1].Resize(Did.Count, 1) = WorksheetFunction.Transpose(Did.keys)
-    For Each Cell In Sheets(SheetName).Range("A2:A"& Did.Count)
+    For Each Cell In Sheets(SheetName).Range("A2:A" & Did.Count)
     If Cell <> "" Then
         CellArray = Split(Cell.Value, "\")
         CellName = CellArray(UBound(CellArray))
-        CellPath = Replace(Cell.Value,CellName,"")
+        CellPath = Replace(Cell.Value, CellName, "")
         Cell.Value = CellPath
         Sheets(SheetName).Hyperlinks.Add Cell, Cell.Value
     End If
     Next
-    For Each Cell In Sheets(SheetName).Range("B2:B"& Did.Count)
+    For Each Cell In Sheets(SheetName).Range("B2:B" & Did.Count)
     If Cell <> "" Then
         Sheets(SheetName).Hyperlinks.Add Cell, Cell.Value
         CellArray = Split(Cell.Value, "\")
@@ -67,57 +64,58 @@ Function ListFiles(DirPath, PathType)
         Cell.Value = CellName
     End If
     Next
-    Call MergeCells(SheetName,Did.Count)
+    Call MergeCells(SheetName, Did.Count)
     Sheets(SheetName).Range("A1:B1").EntireColumn.AutoFit
-    Sheets(SheetName).Range("A1:A"&Did.Count).HorizontalAlignment = xlCenter '水平居中
-    Sheets(SheetName).Range("A1:A"&Did.Count).VerticalAlignment = xlCenter '垂直居中
+    Sheets(SheetName).Range("A1:A" & Did.Count).HorizontalAlignment = xlCenter '水平居中
+    Sheets(SheetName).Range("A1:A" & Did.Count).VerticalAlignment = xlCenter '垂直居中
 End Function
 
 
-Function MergeCells(SheetName,CellNumber)
-    'set your data rows here 
-    Dim Rows As Integer: Rows = CellNumber 
+Function MergeCells(SheetName, CellNumber)
+    'set your data rows here
+    Dim Rows As Integer: Rows = CellNumber
 
-    Dim First As Integer: First = 2 
-    Dim Last As Integer: Last = 0 
-    Dim Rng As Range 
+    Dim First As Integer: First = 2
+    Dim Last As Integer: Last = 0
+    Dim Rng As Range
 
-    Application.DisplayAlerts = False 
-    With ActiveSheet 
-     For i = 1 To Rows + 1 
-      If Sheets(SheetName).Range("A" & i).Value <> Sheets(SheetName).Range("A" & First).Value Then 
-       If i - 1 > First Then 
-        Last = i - 1 
+    Application.DisplayAlerts = False
+    With ActiveSheet
+     For i = 1 To Rows + 1
+      If Sheets(SheetName).Range("A" & i).Value <> Sheets(SheetName).Range("A" & First).Value Then
+       If i - 1 > First Then
+        Last = i - 1
 
-        Set Rng = Sheets(SheetName).Range("A" & First, "A" & Last) 
+        Set Rng = Sheets(SheetName).Range("A" & First, "A" & Last)
         Rng.MergeCells = True
-       End If 
+       End If
 
-       First = i 
-       Last = 0 
-      End If 
-     Next i 
-    End With 
-    Application.DisplayAlerts = True 
+       First = i
+       Last = 0
+      End If
+     Next i
+    End With
+    Application.DisplayAlerts = True
 End Function
 
 Private Sub CommandButton1_Click()
-    On Error Resume Next
-    Dim MyName, Dirs, RootNum, Sheets, t, TT
+    Dim MyName, Dirs, RootNum, t, TT
     t = Time
     Set objShell = CreateObject("Shell.Application")
     Set objFolder = objShell.BrowseForFolder(0, "chose", 0, 0)
     Set Dirs = CreateObject("Scripting.Dictionary")
-    If Not objFolder Is Nothing Then lj = objFolder.self.Path & "\"
+    If Not objFolder Is Nothing Then
+    lj = objFolder.self.Path & "\"
+    Else
+    Exit Sub
+    End If
+
     Dirs.Add (lj), ""
     i = 0
     Do While i < Dirs.Count
         Ke = Dirs.keys   '开始遍历字典
 
         MyName = Dir(Ke(i), vbDirectory)    '查找目录
-        If Err.Number <> 0 Then
-        End If
-        On Error GoTo 0
         Do While MyName <> ""
             If MyName <> "." And MyName <> ".." Then
                 If (GetAttr(Ke(i) & MyName) And vbDirectory) = vbDirectory Then    '如果是次级目录
@@ -136,7 +134,9 @@ Private Sub CommandButton1_Click()
     End If
     Next
     Call ListFiles(lj, "Root")
+    Sheets("Sheet1").Move Before:=ActiveWorkbook.Sheets(1)
     TT = Time - t
     MsgBox Minute(TT) & " min" & Second(TT) & " sec"
 End Sub
+
 
